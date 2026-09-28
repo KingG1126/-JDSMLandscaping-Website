@@ -1,4 +1,4 @@
- // ---------- mobile nav ----------
+// ---------- mobile nav ----------
 const navToggle = document.getElementById('navToggle');
 const mainNav = document.getElementById('mainNav');
 
@@ -39,8 +39,9 @@ if ('IntersectionObserver' in window) {
 }
 
 // ---------- contact form ----------
-// Requests are emailed to this address through FormSubmit (formsubmit.co).
-const REQUEST_EMAIL = 'jdsmlandscaping@gmail.com';
+// Requests are emailed to you through Web3Forms (web3forms.com).
+// Paste the access key that Web3Forms emails you between the quotes below.
+const WEB3FORMS_ACCESS_KEY = 'PASTE_YOUR_ACCESS_KEY_HERE';
 
 const form = document.getElementById('contactForm');
 const status = document.getElementById('formStatus');
@@ -101,15 +102,16 @@ form.addEventListener('submit', async (e) => {
   status.textContent = '';
 
   try {
-    const response = await fetch(`https://formsubmit.co/ajax/${REQUEST_EMAIL}`, {
+    const response = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
       body: JSON.stringify({
-        _subject: `New quote request from ${name}`,
-        _template: 'table',
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: `New quote request from ${name}`,
+        from_name: 'JDSM Landscaping Website',
         name: name,
         email: email,
         phone: form.phone.value.trim() || 'Not provided',
@@ -120,7 +122,7 @@ form.addEventListener('submit', async (e) => {
 
     const result = await response.json();
 
-    if (!response.ok || String(result.success) !== 'true') {
+    if (!response.ok || !result.success) {
       throw new Error(result.message || 'Request failed');
     }
 
@@ -128,6 +130,7 @@ form.addEventListener('submit', async (e) => {
     status.textContent = `Thanks, ${name.split(' ')[0]} — we'll be in touch within one to three business days.`;
     form.reset();
   } catch (err) {
+    console.error(err);
     status.style.color = '#b3432f';
     status.textContent = 'Something went wrong sending that. Please call (480) 544-3994 or email jdsmlandscaping@gmail.com.';
   } finally {
